@@ -2,8 +2,9 @@ import pyautogui
 from pprint import pprint
 from color import *
 from constants import *
-from block import *
+from block_type import *
 from board import *
+from block import *
     
 def get_pixel(image, row, col):
     return image.getdata()[row * image.size[0] + col]
@@ -72,13 +73,12 @@ def get_next_blocks():
         [all_blocks[block_key] for block_key in sorted(next_block_keys, key=lambda tup: tup[0])]
     )
 
-# next_blocks = get_next_blocks()
-# pprint(next_blocks)
-purple_block = Block.get_block_from_color(Color.PURPLE)
-print(purple_block)
-print(purple_block.get_default_orientation)
-board = Board()
-print(board.state)
+next_blocks = get_next_blocks()
+pprint(next_blocks)
+# purple_block = BlockType.get_block_type_from_color(Color.GREEN)
+# board = Board()
+# green_block = Block(Color.GREEN)
+# pprint(green_block)
 
 
 
