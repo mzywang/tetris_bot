@@ -1,0 +1,4 @@
+GRAN = 36
+ADJ_OFFSET = [-GRAN, 0, GRAN] 
+LOOKAHEAD = 5
+
