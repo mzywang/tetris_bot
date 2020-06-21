@@ -11,13 +11,13 @@ class BlockType(Enum):
     J = 5
     L = 6
 
-    @classmethod
-    def get_block_type_from_color(cls, color):
+    @staticmethod
+    def get_block_type_from_color(color):
         return _COLOR_BLOCK_MAP[color]
 
     @property
-    def default_orientation(self):
-        return _DEFAULT_ORIENTATION_MAP[self] 
+    def default_block_array(self):
+        return _DEFAULT_BLOCK_ARRAY_MAP[self] 
 
     @property
     def default_offset(self):
@@ -33,7 +33,7 @@ _COLOR_BLOCK_MAP = {
     Color.ORANGE: BlockType.L,  
 } 
 
-_DEFAULT_ORIENTATION_MAP = {
+_DEFAULT_BLOCK_ARRAY_MAP = {
     BlockType.I: np.array([
         [1, 1, 1, 1]
     ]),

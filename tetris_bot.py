@@ -1,85 +1,96 @@
 import pyautogui
+import logging
+from datetime import datetime
 from pprint import pprint
 from color import *
 from constants import *
 from block_type import *
 from board import *
 from block import *
+
+def _init_logger():
+    logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)s]  %(message)s")
+    rootLogger = logging.getLogger()
+
+    dt_string = datetime.now().strftime("%d%m%Y%H%M%S")
+    fileHandler = logging.FileHandler(f"logs/{dt_string}.log")
+    fileHandler.setFormatter(logFormatter)
+    rootLogger.addHandler(fileHandler)
+
+    consoleHandler = logging.StreamHandler()
+    consoleHandler.setFormatter(logFormatter)
+    rootLogger.addHandler(consoleHandler)
     
-def get_pixel(image, row, col):
+def _get_pixel(image, row, col):
     return image.getdata()[row * image.size[0] + col]
 
-def get_image_dim(image):
+def _get_image_dim(image):
     return (image.size[1], image.size[0])
 
-def find_first_pixel(image, color, ignore_list):
-    image_dim = get_image_dim(image)
+def _find_first_pixel(image, color, ignore_list):
+    image_dim = _get_image_dim(image)
     for i in range(0, image_dim[0], GRAN):
         for j in range(0, image_dim[1], GRAN):
-            if (i, j) not in ignore_list and get_pixel(image, i, j) == color.value:
+            if (i, j) not in ignore_list and _get_pixel(image, i, j) == color.value:
                 return(i, j)
     return (-1, -1)
 
-def expand_and_track_helper(image, color, source, tracked):
+def _expand_and_track_helper(image, color, source, tracked):
     for i in ADJ_OFFSET:
         for j in ADJ_OFFSET:
             new_source = (source[0] + i, source[1] + j)
-            new_pixel = get_pixel(image, new_source[0], new_source[1])
+            new_pixel = _get_pixel(image, new_source[0], new_source[1])
             if new_source not in tracked and new_pixel == color.value:
                 tracked.append(new_source)
-                expand_and_track_helper(image, color, new_source, tracked)
+                _expand_and_track_helper(image, color, new_source, tracked)
     return tracked
 
-def expand_and_track(image, color, source):
+def _expand_and_track(image, color, source):
     tracked = [source]
     for i in ADJ_OFFSET:
         for j in ADJ_OFFSET:
             new_source = (source[0] + i, source[1] + j)
-            new_pixel = get_pixel(image, new_source[0], new_source[1])
+            new_pixel = _get_pixel(image, new_source[0], new_source[1])
             if new_source not in tracked and new_pixel == color.value:
                 tracked.append(new_source)
-                tracked = expand_and_track_helper(image, color, new_source, tracked)
+                tracked = _expand_and_track_helper(image, color, new_source, tracked)
     return tracked
 
-def get_blocks_with_color(image, color):
+def _get_blocks_with_color(image, color):
     ignore_list = []
     blocks = {}
     block_loc = (0, 0)
     while block_loc != (-1, -1):
-        block_loc = find_first_pixel(image, color, ignore_list)
-        block = expand_and_track(image, color, block_loc)
+        block_loc = _find_first_pixel(image, color, ignore_list)
+        block = _expand_and_track(image, color, block_loc)
         blocks[block_loc] = block
         ignore_list = ignore_list + block
     del blocks[(-1, -1)]
     return blocks
 
-def get_next_blocks():
+def _get_next_blocks():
     ss = pyautogui.screenshot()
     all_blocks = {}
     for color in COLORS:
-        blocks_by_color = get_blocks_with_color(ss, color)
+        blocks_by_color = _get_blocks_with_color(ss, color)
         for block in blocks_by_color:
             all_blocks[block] = {
                 'color': color,
             }
+    if all_blocks == {}:
+        logging.warning("No blocks detected.")
+        return (None, None)
     block_keys = list(all_blocks.keys())
     block_keys_by_width = sorted(block_keys, key=lambda tup: tup[1])
-    next_block_keys = block_keys_by_width[-LOOKAHEAD:]
-    current_block_keys = block_keys_by_width[:-LOOKAHEAD]
-    if all_blocks == {}:
-        raise Exception("ERROR: No blocks detected.")
+    next_block_keys = sorted(block_keys_by_width[-LOOKAHEAD:], key=lambda tup: tup[0])
+    current_block_key = sorted(block_keys_by_width[:-LOOKAHEAD], key=lambda tup: tup[0])[0]
     return (
-        all_blocks[sorted(current_block_keys, key=lambda tup: tup[0])[0]], 
-        [all_blocks[block_key] for block_key in sorted(next_block_keys, key=lambda tup: tup[0])]
+        all_blocks[current_block_key]['color'],
+        [all_blocks[block_key]['color'] for block_key in next_block_keys] 
     )
 
-next_blocks = get_next_blocks()
-pprint(next_blocks)
-# purple_block = BlockType.get_block_type_from_color(Color.GREEN)
-# board = Board()
-# green_block = Block(Color.GREEN)
-# pprint(green_block)
-
-
-
+_init_logger()
+current_block, next_blocks = _get_next_blocks()
+print(f"Current block falling: {current_block}")
+print(f"Next blocks: {next_blocks}")
 

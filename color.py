@@ -9,6 +9,12 @@ class Color(Enum):
     YELLOW = (218, 161, 55, 255)
     ORANGE = (212, 99, 40, 255)
 
+    def __repr__(self):
+        return self.name
+
+    def __str__(self):
+        return self.__repr__()
+
 COLORS = [
     Color.PURPLE, 
     Color.RED, 
