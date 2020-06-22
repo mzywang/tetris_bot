@@ -14,3 +14,4 @@ def init_logger():
     consoleHandler.setFormatter(logFormatter)
     rootLogger.addHandler(consoleHandler)
 
+    rootLogger.setLevel(logging.DEBUG)

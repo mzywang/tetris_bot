@@ -2,7 +2,7 @@ import pyautogui
 import logging
 from block import *
 from color import *
-from constants import *
+from config import *
 
 def _get_pixel(image, row, col):
     return image.getdata()[row * image.size[0] + col]

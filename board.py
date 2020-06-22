@@ -1,10 +1,11 @@
 import numpy as np
-from constants import * 
+import pyautogui
+from config import * 
 
 class Board:
     
     def __init__(self):
-        self.state = np.zeros((BOARD_HEIGHT, BOARD_WIDTH))
+        self.state = np.zeros((BOARD_HEIGHT, BOARD_WIDTH), dtype=int)
 
     def place_block(self, block):
         block_height = block.array.shape[0]
@@ -26,10 +27,18 @@ class Board:
                 if block.array[i][j]:
                     self.state[BOARD_HEIGHT - (placement_height + block_height - i)][block.offset + j] = 1
 
+        # Tell pyautogui to place the block
+        if KEYBOARD_ACTIVE:
+            pyautogui.write([HARD_DROP_KEY])
+
+        # Clear lines in board state 
+        for i in range(BOARD_HEIGHT):
+            if min(self.state[i, :]) == 1:
+                self.state = np.concatenate((np.zeros((1, BOARD_WIDTH), dtype=int), self.state[0:i, :], self.state[i + 1:, :]))
         return self.state
 
     def __repr__(self):
-        return "\n".join([" ".join([str(int(val)) for val in self.state[i, :].tolist()]) for i in range(BOARD_HEIGHT)])
+        return "\nCurrent Board:\n" + "\n".join([" ".join([str(val) for val in self.state[i, :].tolist()]) for i in range(BOARD_HEIGHT)])
 
     def __str__(self):
         return self.__repr__()
