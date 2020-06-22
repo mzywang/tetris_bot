@@ -2,13 +2,15 @@
 GRAN = 36
 ADJ_OFFSET = [-GRAN, 0, GRAN] 
 LOOKAHEAD = 5
+START_DELAY = 1
+ACTION_DELAY = .5
 
 # Board Configuration
 BOARD_HEIGHT = 20
 BOARD_WIDTH = 10
 
 # Keyboard Configuration
-KEYBOARD_ACTIVE = False
+KEYBOARD_ACTIVE = True
 MOVE_LEFT_KEY = 'left'
 MOVE_RIGHT_KEY = 'right'
 SOFT_DROP_KEY = 'down'

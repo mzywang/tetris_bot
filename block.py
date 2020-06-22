@@ -12,6 +12,7 @@ class Block:
 
     def _set_offset(self, offset):
         # Sets the offset while forcing it to be on the board.
+        # TODO block movement of block if the board has gotten too high
         self.offset = min((max(offset, 0)), BOARD_WIDTH - self.array.shape[1])
 
     def _set_array(self, array):
