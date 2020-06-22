@@ -6,16 +6,16 @@ class Block:
     def __init__(self, color):
         self.color = color
         self.block_type = BlockType.get_block_type_from_color(color)
-        self.block_array = self.block_type.default_block_array
+        self.array = self.block_type.default_array
         self.rotation_angle = 0
         self.offset = self.block_type.default_offset
 
     def set_offset(self, offset):
         # Sets the offset while forcing it to be on the board.
-        self.offset = min((max(offset, 0)), BOARD_WIDTH - self.block_array.shape[1])
+        self.offset = min((max(offset, 0)), BOARD_WIDTH - self.array.shape[1])
 
-    def set_block_array(self, block_array):
-        self.block_array = block_array
+    def set_array(self, array):
+        self.array = array
 
     def set_rotation_angle(self, rotation_angle):
         self.rotation_angle = rotation_angle % 360
@@ -32,8 +32,8 @@ class Block:
         self.set_rotation_angle(
             rotation_angle = self.rotation_angle + rotation
         )
-        self.set_block_array(
-            block_array = np.rot90(self.block_array, times)
+        self.set_array(
+            array = np.rot90(self.array, times)
         )
         self.set_offset(
             offset = self.offset + self._get_rotation_offset(last_rotation_angle, self.rotation_angle)
@@ -64,7 +64,7 @@ class Block:
 Color: {self.color.name}, 
 Rotation: {self.rotation_angle},
 Block Array: 
-{self.block_array}, 
+{self.array}, 
 Offset: {self.offset}"""
     
     def __str__(self):

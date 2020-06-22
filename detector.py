@@ -1,5 +1,6 @@
 import pyautogui
 import logging
+from block import *
 from color import *
 from constants import *
 
@@ -64,10 +65,13 @@ def get_next_blocks():
         return (None, None)
     block_keys = list(all_blocks.keys())
     block_keys_by_width = sorted(block_keys, key=lambda tup: tup[1])
+    if len(block_keys_by_width) <= LOOKAHEAD:
+        logging.warning("Not enough blocks detected.")
+        return (None, None)
     next_block_keys = sorted(block_keys_by_width[-LOOKAHEAD:], key=lambda tup: tup[0])
     current_block_key = sorted(block_keys_by_width[:-LOOKAHEAD], key=lambda tup: tup[0])[0]
     return (
-        all_blocks[current_block_key]['color'],
-        [all_blocks[block_key]['color'] for block_key in next_block_keys] 
+        Block(all_blocks[current_block_key]['color']),
+        [Block(all_blocks[block_key]['color']) for block_key in next_block_keys] 
     )
 
