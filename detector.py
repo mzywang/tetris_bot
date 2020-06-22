@@ -51,7 +51,7 @@ def _get_blocks_with_color(image, color):
     del blocks[(-1, -1)]
     return blocks
 
-def get_next_blocks():
+def get_next_blocks(first_call = False):
     ss = pyautogui.screenshot()
     all_blocks = {}
     for color in COLORS:
@@ -70,6 +70,8 @@ def get_next_blocks():
         return (None, None)
     next_block_keys = sorted(block_keys_by_width[-LOOKAHEAD:], key=lambda tup: tup[0])
     current_block_key = sorted(block_keys_by_width[:-LOOKAHEAD], key=lambda tup: tup[0])[0]
+    if first_call:
+        pyautogui.click(current_block_key[0], current_block_key[1])
     return (
         Block(all_blocks[current_block_key]['color']),
         [Block(all_blocks[block_key]['color']) for block_key in next_block_keys] 
