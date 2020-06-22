@@ -48,15 +48,21 @@ def main():
     utils.init_logger()
     board = Board()
     is_active = True 
+    has_started = False
     time.sleep(START_DELAY)
 
     while is_active:
         current_block, next_blocks = detector.get_next_blocks()
         logging.info(f"Current block falling: {current_block}")
         logging.debug(board)
-        if current_block is None:
+        if current_block is None and not has_started:
+            logger.info("Waiting for game to start.")
+            time.sleep(START_DELAY)
+        elif current_block is None and has_started: 
+            logger.info("Game has ended.")
             is_active = False
-        else: 
+        else:
+            has_started = True
             decide_and_place(current_block, board)
             time.sleep(ACTION_DELAY)
 
